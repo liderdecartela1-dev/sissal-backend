@@ -2,32 +2,28 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+
+// middleware essencial
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
-
-console.log("🔥 SisSal API iniciando...");
-
-/**
- * ROOT
- */
-app.get("/", (req, res) => {
-  res.send("SisSal API online 🚀");
-});
-
-/**
- * HEALTH
- */
+// ==============================
+// 📌 HEALTH CHECK (Render usa isso muito)
+// ==============================
 app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+  res.status(200).json({
+    status: "ok",
+    message: "SisSal BI rodando normalmente 🚀",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
 });
 
-/**
- * DADOS
- */
+// ==============================
+// 📊 DADOS DO DASHBOARD
+// ==============================
 app.get("/dados", (req, res) => {
-  res.json({
+  res.status(200).json({
     totalAtendido: 795108.32,
     totalFaturado: 920450.1,
     perda: 125341.78,
@@ -44,9 +40,11 @@ app.get("/dados", (req, res) => {
   });
 });
 
-/**
- * ⚠️ IMPORTANTE NO RENDER
- */
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 SisSal rodando na porta ${PORT}`);
+// ==============================
+// 🚀 START SERVER (Render exige process.env.PORT)
+// ==============================
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 SisSal BI rodando na porta ${PORT}`);
 });
