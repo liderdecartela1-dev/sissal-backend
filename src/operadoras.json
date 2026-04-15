@@ -1,0 +1,17 @@
+[
+  {
+    "nome": "AMIL",
+    "email": "cobranca@amil.com.br",
+    "portal": "https://portal.amil.com.br"
+  },
+  {
+    "nome": "UNIMED",
+    "email": "financeiro@unimed.com.br",
+    "portal": "https://portal.unimed.com.br"
+  },
+  {
+    "nome": "SULAMERICA",
+    "email": "contato@sulamerica.com.br",
+    "portal": "https://portal.sulamerica.com.br"
+  }
+]

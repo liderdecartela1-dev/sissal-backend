@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Operadoras</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f6f9;
+}
+
+.container {
+  margin-left: 220px;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-cobrar {
+  background: #e67e22;
+  color: white;
+}
+
+.btn-link {
+  background: #3498db;
+  color: white;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+  <h2>🏥 Operadoras</h2>
+
+  <div id="lista"></div>
+</div>
+
+<script>
+fetch("/dashboard-data")
+.then(res => res.json())
+.then(data => {
+
+  const lista = document.getElementById("lista");
+
+  data.atrasados.forEach(op => {
+
+    lista.innerHTML += `
+      <div class="card">
+        <b>${op.convenio}</b><br>
+        💰 R$ ${op.valor}<br>
+        ⏳ ${op.dias} dias em atraso<br><br>
+
+        <button class="btn btn-cobrar" onclick="cobrar('${op.convenio}')">
+          Cobrar
+        </button>
+
+        <button class="btn btn-link" onclick="abrirPortal('${op.convenio}')">
+          Portal
+        </button>
+      </div>
+    `;
+  });
+
+});
+
+function cobrar(nome) {
+  alert("Cobrança enviada para " + nome);
+}
+
+function abrirPortal(nome) {
+  alert("Abrir portal de " + nome);
+}
+</script>
+
+</body>
+</html>

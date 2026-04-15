@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>SisSal BI Executivo</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0b1220;
+  color: #fff;
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 240px;
+  background: #0f1a2b;
+  height: 100vh;
+  padding: 20px;
+  position: fixed;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background: #16263d;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+/* MAIN */
+.main {
+  margin-left: 260px;
+  padding: 20px;
+  width: 100%;
+}
+
+/* CARDS */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.card {
+  background: #111c2e;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* INPUTS */
+input, select, button {
+  padding: 10px;
+  margin: 5px;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 8px;
+  border-bottom: 1px solid #1f2a3a;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>SisSal BI</h2>
+  <button onclick="tela('dash')">Dashboard</button>
+  <button onclick="tela('protocolo')">Protocolos</button>
+  <button onclick="tela('glosa')">Glosas</button>
+  <button onclick="tela('cobranca')">Cobrança</button>
+</div>
+
+<div class="main">
+
+<!-- DASH -->
+<div id="dash">
+
+<div class="cards">
+  <div class="card">Recebido: <span id="r">0</span></div>
+  <div class="card">Aberto: <span id="a">0</span></div>
+  <div class="card">Glosa: <span id="g">0</span></div>
+  <div class="card">Perda: <span id="p">0</span></div>
+</div>
+
+<canvas id="grafico"></canvas>
+
+<table id="ops"></table>
+
+</div>
+
+<!-- PROTOCOLO -->
+<div id="protocolo" style="display:none">
+
+<h3>Novo Protocolo</h3>
+
+<input id="conv" placeholder="Convênio">
+<input id="tipo" placeholder="Tipo Atendimento">
+<input id="prot" placeholder="Protocolo">
+<input id="valor" placeholder="Valor Total">
+<input id="pago" placeholder="Valor Recebido">
+
+<button onclick="salvar()">Salvar</button>
+
+</div>
+
+<!-- GLOSA -->
+<div id="glosa" style="display:none">
+<h3>Glosas</h3>
+<table id="tabelaGlosa"></table>
+</div>
+
+<!-- COBRANÇA -->
+<div id="cobranca" style="display:none">
+<h3>Baixa</h3>
+
+<input id="id" placeholder="ID">
+<input id="valorPago" placeholder="Valor Pago">
+
+<button onclick="baixar()">Baixar</button>
+</div>
+
+</div>
+
+<script>
+
+function tela(t){
+["dash","protocolo","glosa","cobranca"].forEach(x=>{
+document.getElementById(x).style.display="none";
+});
+document.getElementById(t).style.display="block";
+}
+
+async function salvar(){
+
+let valor = Number(document.getElementById("valor").value);
+let pago = Number(document.getElementById("pago").value);
+
+let recebido = 0;
+let glosa = 0;
+let status = "";
+
+if(pago >= valor){
+  recebido = valor;
+  status = "recebido_total";
+} else {
+  recebido = pago;
+  glosa = valor - pago;
+  status = "recebido_parcial";
+}
+
+await fetch("/api/protocolo",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+convenio: conv.value,
+tipo_atendimento: tipo.value,
+protocolo: prot.value,
+valor,
+recebido,
+glosa,
+status
+})
+});
+
+alert("Salvo!");
+}
+
+async function carregar(){
+const res = await fetch("/api/dashboard");
+const d = await res.json();
+
+r.innerText = d.recebido;
+a.innerText = d.aberto;
+g.innerText = d.glosa;
+p.innerText = d.perda;
+}
+
+carregar();
+
+</script>
+
+</body>
+</html>

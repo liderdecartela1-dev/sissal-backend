@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Pagamentos</title>
+
+<style>
+body { font-family: Arial; background:#0f172a; color:white; }
+table { width:100%; margin-top:20px; border-collapse: collapse; }
+td, th { padding:10px; border-bottom:1px solid #333; }
+button { padding:5px 10px; cursor:pointer; }
+</style>
+
+</head>
+
+<body>
+
+<h1>💰 Baixa de Protocolos</h1>
+
+<table>
+<thead>
+<tr>
+<th>Protocolo</th>
+<th>Convênio</th>
+<th>Valor</th>
+<th>Status</th>
+<th>Ação</th>
+</tr>
+</thead>
+
+<tbody id="tabela"></tbody>
+
+</table>
+
+<script>
+
+fetch("/pagamentos")
+.then(res => res.json())
+.then(dados => {
+
+  const tabela = document.getElementById("tabela");
+
+  dados.forEach(item => {
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${item.protocolo}</td>
+      <td>${item.convenio}</td>
+      <td>R$ ${item.valor_liquido}</td>
+      <td>${item.status}</td>
+      <td>
+        <button onclick="baixar('${item.protocolo}', ${item.valor_liquido})">
+          Dar Baixa
+        </button>
+      </td>
+    `;
+
+    tabela.appendChild(tr);
+  });
+
+});
+
+function baixar(protocolo, valorTotal) {
+
+  let valor = prompt("Digite valor recebido:");
+
+  if (!valor) return;
+
+  fetch("/baixar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      protocolo: protocolo,
+      valor_recebido: Number(valor)
+    })
+  })
+  .then(() => {
+    alert("Baixa realizada!");
+    location.reload();
+  });
+
+}
+
+</script>
+
+</body>
+</html>

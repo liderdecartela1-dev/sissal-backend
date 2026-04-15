@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "convenio": "AMIL",
+    "valor_bruto": 1000,
+    "valor_liquido": 0,
+    "status": "em_aberto",
+    "dias_atraso": 95
+  },
+  {
+    "id": 2,
+    "convenio": "UNIMED",
+    "valor_bruto": 2000,
+    "valor_liquido": 0,
+    "status": "em_aberto",
+    "dias_atraso": 60
+  },
+  {
+    "id": 3,
+    "convenio": "SULAMERICA",
+    "valor_bruto": 1500,
+    "valor_liquido": 0,
+    "status": "em_aberto",
+    "dias_atraso": 85
+  }
+]
