@@ -3,27 +3,20 @@ const cors = require("cors");
 
 const app = express();
 
-// middleware essencial
 app.use(cors());
 app.use(express.json());
 
-// ==============================
-// 📌 HEALTH CHECK (Render usa isso muito)
-// ==============================
+// 🟢 HEALTH (teste de vida do servidor)
 app.get("/health", (req, res) => {
-  res.status(200).json({
+  res.json({
     status: "ok",
-    message: "SisSal BI rodando normalmente 🚀",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString()
+    message: "SisSal rodando 🚀"
   });
 });
 
-// ==============================
-// 📊 DADOS DO DASHBOARD
-// ==============================
+// 📊 DADOS DO DASHBOARD (BI)
 app.get("/dados", (req, res) => {
-  res.status(200).json({
+  res.json({
     totalAtendido: 795108.32,
     totalFaturado: 920450.1,
     perda: 125341.78,
@@ -40,11 +33,9 @@ app.get("/dados", (req, res) => {
   });
 });
 
-// ==============================
-// 🚀 START SERVER (Render exige process.env.PORT)
-// ==============================
+// 🚀 PORTA DO RENDER / LOCAL
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 SisSal BI rodando na porta ${PORT}`);
+  console.log("🚀 SisSal BI rodando na porta " + PORT);
 });
