@@ -5,7 +5,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🏠 ROTA PRINCIPAL (resolve Cannot GET /)
+/* 🏠 ROTA PRINCIPAL */
 app.get("/", (req, res) => {
   res.json({
     sistema: "SisSal BI",
@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// ❤️ HEALTH
+/* ❤️ HEALTH CHECK */
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
@@ -25,25 +25,84 @@ app.get("/health", (req, res) => {
   });
 });
 
-// 📊 DADOS
+/* 📊 DADOS (NOVO MODELO DE CONCILIAÇÃO) */
 app.get("/dados", (req, res) => {
+  
+  const protocolos = [
+    {
+      competencia: "JANEIRO",
+      convenio: "AMIL",
+      cnpj: "29.309.127/0001-79",
+      local: "Suzano",
+      banco: "Itau",
+      tipoAtendimento: "Aba",
+      protocolo: "5587354562",
+      valorBruto: 14100,
+      valorPago: 14100,
+      previsaoPagamento: "2026-02-10",
+      dataPagamento: "2026-02-10"
+    },
+    {
+      competencia: "JANEIRO",
+      convenio: "PORTO SEGURO",
+      cnpj: "29.309.127/0001-99",
+      local: "Suzano",
+      banco: "Itau",
+      tipoAtendimento: "Aba",
+      protocolo: "5587354562",
+      valorBruto: 14100,
+      valorPago: 0,
+      previsaoPagamento: "2026-03-15",
+      dataPagamento: null
+    }
+  ];
+
+  let totalPago = 0;
+  let totalAberto = 0;
+  let totalAtrasado = 0;
+
+  const hoje = new Date();
+
+  const processados = protocolos.map(p => {
+    const previsao = new Date(p.previsaoPagamento);
+
+    let status = "EM_ABERTO";
+
+    if (p.valorPago === p.valorBruto) {
+      status = "PAGO";
+      totalPago += p.valorBruto;
+    } 
+    else if (p.valorPago > 0 && p.valorPago < p.valorBruto) {
+      status = "PARCIAL";
+      totalPago += p.valorPago;
+      totalAberto += (p.valorBruto - p.valorPago);
+    } 
+    else if (hoje > previsao && p.valorPago === 0) {
+      status = "ATRASADO";
+      totalAtrasado += p.valorBruto;
+    } 
+    else {
+      status = "EM_ABERTO";
+      totalAberto += p.valorBruto;
+    }
+
+    return {
+      ...p,
+      status
+    };
+  });
+
   res.json({
-    totalAtendido: 795108.32,
-    totalFaturado: 920450.1,
-    perda: 125341.78,
-    convenios: [
-      { nome: "AMIL SAÚDE", valor: 210000 },
-      { nome: "BRADESCO", valor: 180000 },
-      { nome: "SULAMÉRICA", valor: 305108.32 }
-    ],
-    especialidades: [
-      { nome: "Psicologia", valor: 320000 },
-      { nome: "Fonoaudiologia", valor: 210000 },
-      { nome: "Terapia Ocupacional", valor: 265108.32 }
-    ]
+    resumo: {
+      totalPago,
+      totalAberto,
+      totalAtrasado
+    },
+    protocolos: processados
   });
 });
 
+/* 🚀 START SERVER */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
